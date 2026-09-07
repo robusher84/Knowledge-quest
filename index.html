@@ -257,6 +257,28 @@
   #resetBtn.armed{background:var(--no-bg);border-color:var(--no);color:var(--no)}
   footer{color:var(--muted);text-align:center;font-size:12px;margin-top:30px;opacity:.7}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+  /* ---------- Homework / match-up ---------- */
+  .hwintro{color:var(--muted);font-size:14px;margin:2px 4px 16px}
+  .hwlist{display:flex;flex-direction:column;gap:12px}
+  .matchhead{margin-bottom:14px}
+  .matchhd{font-weight:800;font-size:14px;color:var(--muted);text-align:center;margin:2px 0 15px;min-height:18px}
+  .terms{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-bottom:16px}
+  .term{background:var(--surface-hi);border:1.5px solid var(--line-hi);color:var(--text);font-weight:800;font-size:15px;padding:11px 15px;border-radius:13px;transition:transform .08s,background .15s,border-color .15s,opacity .2s}
+  .term:active{transform:scale(.96)}
+  .term.sel{background:linear-gradient(180deg,#FFCF66,#F5AE2E);color:#2a1c00;border-color:transparent}
+  .term.locked{opacity:.4;pointer-events:none;background:var(--ok-bg);border-color:transparent;color:var(--ok)}
+  .term.wrong{animation:hwshake .36s}
+  .defs{display:flex;flex-direction:column;gap:10px}
+  .def{text-align:left;background:var(--surface);border:1.5px solid var(--line);color:var(--text);font-size:15px;font-weight:600;line-height:1.4;padding:14px 15px;border-radius:14px;transition:transform .08s,border-color .15s,background .15s}
+  .def:active{transform:scale(.99)}
+  .def.locked{background:var(--ok-bg);border-color:rgba(70,214,160,.4);color:#CFF5E7;pointer-events:none}
+  .def.wrong{border-color:var(--no);background:var(--no-bg);animation:hwshake .36s}
+  .studyview .pair{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+  .studyview .pair b{display:block;color:var(--gold);font-size:15px;margin-bottom:3px}
+  .studyview .pair span{color:#E7E6F2;font-size:14.5px}
+  .matchactions{margin-top:20px;display:flex;flex-direction:column;gap:10px}
+  @keyframes hwshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 </style>
 </head>
 <body>
@@ -300,6 +322,11 @@
       </div>
     </div>
     <div class="advlist" id="advList"></div>
+    <button class="advcard" id="toHomework" type="button" style="margin-top:12px">
+      <span class="ic">📒</span>
+      <span class="info"><span class="t">Homework</span><span class="p">Match-up &amp; recall tasks for class</span></span>
+      <span class="go">›</span>
+    </button>
     <button class="btn ghost" id="advSettings" style="margin-top:6px">⚙︎ Name, character or reset</button>
     <footer>Pick a Knowledge Organiser to explore · works offline</footer>
   </section>
@@ -386,6 +413,29 @@
         <button class="btn ghost" id="homeBtn">← Back to subjects</button>
       </div>
     </div>
+  </section>
+
+  <!-- HOMEWORK LIST -->
+  <section id="homework" class="hidden">
+    <button class="backchip" id="hwToAdv">← Adventures</button>
+    <div class="top"><h2 class="hi"><small>Recall practice</small><span>Homework</span></h2></div>
+    <p class="hwintro">Match each key word to its meaning until you can recall them all from memory.</p>
+    <div class="hwlist" id="hwList"></div>
+    <footer>Tasks to help you revise for class · works offline</footer>
+  </section>
+
+  <!-- MATCH-UP -->
+  <section id="match" class="hidden">
+    <button class="backchip" id="matchToHw">← Homework</button>
+    <div class="matchhead"><div class="qtitle"><b id="matchTitle">Assignment</b><span id="matchProg">Matched 0 of 0</span></div></div>
+    <div class="pbar"><i id="matchFill"></i></div>
+    <div id="studyView" class="studyview hidden"></div>
+    <div id="matchView" class="matchwrap hidden">
+      <div class="matchhd" id="matchHd">Tap a key word, then tap its meaning</div>
+      <div class="terms" id="terms"></div>
+      <div class="defs" id="defs"></div>
+    </div>
+    <div class="matchactions" id="matchActions"></div>
   </section>
 
   <!-- CELEBRATION -->
@@ -1631,6 +1681,7 @@ function loadState(){
   s.bestStreak = s.bestStreak||0;
   s.avatar = s.avatar||"🧙";
   s.progress = s.progress||{};   // {advId:{subjId:{best,attempts,mastered}}}
+  s.homework = s.homework||{};
   if(s.subj){ s.progress.y7p1 = Object.assign({}, s.subj, s.progress.y7p1||{}); delete s.subj; }
   if(!("currentAdv" in s)) s.currentAdv = null;
   return s;
@@ -1642,7 +1693,7 @@ let state = loadState();
    HELPERS
    ============================================================ */
 const $=id=>document.getElementById(id);
-const screens=["welcome","adventures","home","quiz","results"];
+const screens=["welcome","adventures","home","quiz","results","homework","match"];
 function show(name){ screens.forEach(s=>$(s).classList.toggle("hidden", s!==name)); window.scrollTo(0,0); }
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function starStr(n){ let s=""; for(let i=0;i<3;i++) s+= i<n?"★":"☆"; return s; }
@@ -2006,6 +2057,110 @@ $("masterBtn").addEventListener("click",()=>{
   $("masterBtn").textContent = p.mastered ? "Unmark as mastered" : "Mark area as mastered ✓";
 });
 $("homeBtn").addEventListener("click",()=>{ reviseMode=false; renderHome(); show("home"); });
+
+/* ============================================================
+   HOMEWORK — match-up recall tasks
+   ============================================================ */
+const HOMEWORK=[
+ {id:"re-revelation-creation", subject:"RE", emoji:"✠️", c:"#FFD54F",
+  title:"RE — Revelation & Creation key words",
+  pairs:[
+   {term:"God", def:"The eternal, supreme being who created all things."},
+   {term:"Revelation", def:"Ways God has revealed himself to humanity."},
+   {term:"Natural revelation", def:"Humans understanding God through their own reason and experiences."},
+   {term:"Special revelation", def:"How God is revealed in scripture and tradition."},
+   {term:"Literal sense", def:"The meaning of a passage of text as the author intended it."},
+   {term:"Literary form", def:"The genre, historical context and intended audience of a text."},
+   {term:"Creation", def:"When God made the world."},
+   {term:"Creationism", def:"The belief that the world really was created by God in 6 days, as told in Genesis, rejecting the theories of the Big Bang and evolution."},
+   {term:"Scientism", def:"The belief that science answers all of life’s questions about the meaning and purpose of existence."},
+   {term:"Prayer", def:"Communicating with God, usually through words."},
+   {term:"Stewardship", def:"The responsibility to care for the world on behalf of God."}
+  ]}
+];
+function hwEsc(x){return String(x).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function addXpQuiet(n){ state.xp=(state.xp||0)+n; saveState(); }
+let matchS=null;
+function openHomework(){ renderHwList(); show("homework"); }
+function renderHwList(){
+  const box=$("hwList"); if(!box)return; box.innerHTML="";
+  HOMEWORK.forEach(hw=>{
+    const rec=(state.homework||{})[hw.id];
+    const label = rec ? (rec.bestMistakes===0 ? "Best: perfect ✓" : "Best: "+rec.bestPct+"%") : "Not started yet";
+    const icon = rec && rec.bestMistakes===0 ? "🏆" : "📝";
+    const b=document.createElement("button"); b.className="advcard"; b.type="button";
+    b.innerHTML='<span class="ic">'+hw.emoji+'</span>'+
+      '<span class="info"><span class="t">'+hwEsc(hw.title)+'</span>'+
+      '<span class="p">'+hwEsc(hw.subject)+' · '+hw.pairs.length+' key words to match</span>'+
+      '<span class="done-pill">'+icon+' '+label+'</span></span>'+
+      '<span class="go">›</span>';
+    b.addEventListener("click",()=>openMatch(hw.id));
+    box.appendChild(b);
+  });
+}
+function openMatch(id){
+  const hw=HOMEWORK.find(h=>h.id===id); if(!hw)return;
+  matchS={hw, order:shuffle(hw.pairs.map((_,i)=>i)), size:4, pos:0, matched:0, mistakes:0, total:hw.pairs.length, selTerm:null, remaining:0};
+  $("matchTitle").textContent=hw.title; updateMatchProg(); showStudy(true); show("match");
+}
+function showStudy(on){
+  const sv=$("studyView"), mv=$("matchView"), acts=$("matchActions");
+  sv.classList.toggle("hidden",!on); mv.classList.toggle("hidden",on);
+  if(on){
+    sv.innerHTML='<div class="matchhd">📖 Read these, then match them from memory</div>'+
+      matchS.hw.pairs.map(p=>'<div class="pair"><b>'+hwEsc(p.term)+'</b><span>'+hwEsc(p.def)+'</span></div>').join("");
+    acts.innerHTML='<button class="btn" id="beginMatch">▶ Start matching</button>';
+    $("beginMatch").addEventListener("click",()=>{ showStudy(false); loadBatch(); });
+  } else { acts.innerHTML=""; }
+}
+function loadBatch(){
+  const m=matchS; m.selTerm=null;
+  const batch=m.order.slice(m.pos, m.pos+m.size); m.remaining=batch.length;
+  const terms=shuffle(batch.slice()), defs=shuffle(batch.slice());
+  const tEl=$("terms"), dEl=$("defs"); tEl.innerHTML=""; dEl.innerHTML="";
+  terms.forEach(pi=>{ const b=document.createElement("button"); b.className="term"; b.type="button"; b.textContent=m.hw.pairs[pi].term; b.addEventListener("click",()=>selectTerm(b,pi)); tEl.appendChild(b); });
+  defs.forEach(pi=>{ const b=document.createElement("button"); b.className="def"; b.type="button"; b.textContent=m.hw.pairs[pi].def; b.addEventListener("click",()=>chooseDef(b,pi)); dEl.appendChild(b); });
+  $("matchHd").textContent="Tap a key word, then tap its meaning";
+}
+function selectTerm(btn,pi){
+  if(btn.classList.contains("locked"))return;
+  [...$("terms").children].forEach(c=>c.classList.remove("sel"));
+  btn.classList.add("sel"); matchS.selTerm={btn,pi};
+}
+function chooseDef(btn,pi){
+  const m=matchS; if(!m||btn.classList.contains("locked"))return;
+  if(!m.selTerm){ $("matchHd").textContent="First tap a key word ↑"; return; }
+  if(m.selTerm.pi===pi){
+    m.selTerm.btn.classList.remove("sel"); m.selTerm.btn.classList.add("locked"); btn.classList.add("locked");
+    m.matched++; m.remaining--; m.selTerm=null; addXpQuiet(5); updateMatchProg();
+    $("matchHd").textContent="Nice! Keep going";
+    if(m.remaining===0){ m.pos+=m.size; if(m.pos<m.order.length) setTimeout(loadBatch,480); else setTimeout(finishMatch,540); }
+  } else {
+    m.mistakes++; const sb=m.selTerm.btn; btn.classList.add("wrong"); if(sb)sb.classList.add("wrong");
+    $("matchHd").textContent="Not quite — try again";
+    setTimeout(()=>{ btn.classList.remove("wrong"); if(sb)sb.classList.remove("wrong","sel"); },420);
+    m.selTerm=null;
+  }
+}
+function updateMatchProg(){
+  const m=matchS; if(!m)return; const pct=Math.round(m.matched/m.total*100);
+  $("matchProg").textContent="Matched "+m.matched+" of "+m.total;
+  $("matchFill").style.width=pct+"%";
+}
+function finishMatch(){
+  const m=matchS; const tries=m.matched+m.mistakes; const pct=tries?Math.round(m.matched/tries*100):100;
+  state.homework=state.homework||{};
+  const prev=state.homework[m.hw.id]||{attempts:0,bestPct:0,bestMistakes:999};
+  state.homework[m.hw.id]={attempts:(prev.attempts||0)+1, bestPct:Math.max(prev.bestPct||0,pct), bestMistakes:Math.min(prev.bestMistakes==null?999:prev.bestMistakes,m.mistakes), done:true};
+  addXpQuiet(20+(m.mistakes===0?15:0)); saveState();
+  const perfect=m.mistakes===0;
+  celebrateQueue([{emoji:perfect?"🏆":"🎉", title:perfect?"Perfect recall!":"Homework complete!",
+    sub: perfect?("You matched all "+m.total+" key words with no mistakes."):("All "+m.total+" matched — "+m.mistakes+" slip"+(m.mistakes===1?"":"s")+". Try again for a perfect score!")}],
+    ()=>{ renderHwList(); show("homework"); });
+}
+if($("toHomework")) $("toHomework").addEventListener("click",openHomework);
+if($("hwToAdv")) $("hwToAdv").addEventListener("click",()=>{ renderAdventures(); show("adventures"); });
+if($("matchToHw")) $("matchToHw").addEventListener("click",()=>{ renderHwList(); show("homework"); });
 
 /* ============================================================
    WELCOME / SETTINGS / BOOT
