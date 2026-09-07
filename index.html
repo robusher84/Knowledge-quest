@@ -279,6 +279,9 @@
   .studyview .pair span{color:#E7E6F2;font-size:14.5px}
   .matchactions{margin-top:20px;display:flex;flex-direction:column;gap:10px}
   @keyframes hwshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+  .vertag{display:inline-block;color:var(--muted);opacity:.6;font-size:11px;margin-top:7px;letter-spacing:.04em}
+  .verline{color:var(--muted);font-size:12px;text-align:center;margin:6px 0 2px}
+  .verline b{color:var(--text);font-weight:800}
 </style>
 </head>
 <body>
@@ -309,7 +312,7 @@
       <div class="avatars" id="avatarPick"></div>
     </div>
     <button class="btn" id="startJourney">Start my quest →</button>
-    <footer>Your progress saves on this device. No internet needed.</footer>
+    <footer>Your progress saves on this device. No internet needed.<br><span class="vertag" id="verWelcome"></span></footer>
   </section>
 
   <!-- ADVENTURES -->
@@ -462,6 +465,8 @@
         <div class="avatars" id="avatarPick2"></div>
       </div>
       <button class="btn" id="saveName">Save name</button>
+      <button class="btn secondary" id="updateBtn">⟳ Update app to latest</button>
+      <p class="verline">You're on <b id="verSettings">v?</b> · your progress is kept when you update</p>
       <button class="btn secondary" id="resetBtn">Reset all progress</button>
       <button class="btn ghost" id="closeModal">Close</button>
     </div>
@@ -2076,6 +2081,15 @@ const HOMEWORK=[
    {term:"Scientism", def:"The belief that science answers all of life’s questions about the meaning and purpose of existence."},
    {term:"Prayer", def:"Communicating with God, usually through words."},
    {term:"Stewardship", def:"The responsibility to care for the world on behalf of God."}
+  ]},
+ {id:"eng-identity-language", subject:"English", emoji:"📖", c:"#EF9A9A",
+  title:"English — Identity & language key words",
+  pairs:[
+   {term:"Discrimination", def:"The unfair treatment of different categories of people, especially on the grounds of ethnicity, age, sex, or disability."},
+   {term:"Metaphor", def:"A figure of speech in which a word or phrase is applied to an object or action to which it is not literally applicable."},
+   {term:"Prejudice", def:"A preconceived opinion that is not based on reason or actual experience."},
+   {term:"Tolerance", def:"The ability or willingness to tolerate the existence of opinions or behaviour that one dislikes or disagrees with."},
+   {term:"Empathy", def:"The ability to understand and share the feelings of another."}
   ]}
 ];
 function hwEsc(x){return String(x).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
@@ -2100,7 +2114,7 @@ function renderHwList(){
 }
 function openMatch(id){
   const hw=HOMEWORK.find(h=>h.id===id); if(!hw)return;
-  matchS={hw, order:shuffle(hw.pairs.map((_,i)=>i)), size:4, pos:0, matched:0, mistakes:0, total:hw.pairs.length, selTerm:null, remaining:0};
+  matchS={hw, order:shuffle(hw.pairs.map((_,i)=>i)), size:(hw.pairs.length%4===1?3:4), pos:0, matched:0, mistakes:0, total:hw.pairs.length, selTerm:null, remaining:0};
   $("matchTitle").textContent=hw.title; updateMatchProg(); showStudy(true); show("match");
 }
 function showStudy(on){
@@ -2161,6 +2175,22 @@ function finishMatch(){
 if($("toHomework")) $("toHomework").addEventListener("click",openHomework);
 if($("hwToAdv")) $("hwToAdv").addEventListener("click",()=>{ renderAdventures(); show("adventures"); });
 if($("matchToHw")) $("matchToHw").addEventListener("click",()=>{ renderHwList(); show("homework"); });
+
+/* ---------- Version + one-tap update (keeps progress) ---------- */
+const APP_VERSION="1.4";
+const APP_DATE="7 Sep 2026";
+function forceUpdate(){
+  try{ $("modal").classList.add("hidden"); }catch(e){}
+  var base=location.href.split("#")[0].split("?")[0];
+  location.replace(base+"?v="+Date.now());   // cache-buster forces a fresh copy; localStorage is kept (same site)
+}
+function paintVersion(){
+  var t="v"+APP_VERSION+" · "+APP_DATE;
+  if($("verWelcome")) $("verWelcome").textContent=t;
+  if($("verSettings")) $("verSettings").textContent="v"+APP_VERSION;
+}
+if($("updateBtn")) $("updateBtn").addEventListener("click",forceUpdate);
+paintVersion();
 
 /* ============================================================
    WELCOME / SETTINGS / BOOT
