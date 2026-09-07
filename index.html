@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#14121F">
 <title>Year 7 Quest — Knowledge Quiz</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20x='50'%20y='54'%20font-size='78'%20text-anchor='middle'%20dominant-baseline='central'%3E🧠%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20width='100'%20height='100'%20rx='22'%20fill='%2314121F'/%3E%3Ctext%20x='50'%20y='55'%20font-size='64'%20text-anchor='middle'%20dominant-baseline='central'%3E🧠%3C/text%3E%3C/svg%3E">
 <style>
   :root{
     --bg:#14121F; --bg2:#1B1930; --surface:#221F36; --surface-hi:#2C2946;
@@ -282,6 +284,43 @@
   .vertag{display:inline-block;color:var(--muted);opacity:.6;font-size:11px;margin-top:7px;letter-spacing:.04em}
   .verline{color:var(--muted);font-size:12px;text-align:center;margin:6px 0 2px}
   .verline b{color:var(--text);font-weight:800}
+  /* ---------- Boss battles ---------- */
+  .bossintro{text-align:center;padding:8px 4px 0}
+  .bossbig{font-size:90px;line-height:1;margin:8px 0 6px;animation:bossFloat 2.6s ease-in-out infinite}
+  @keyframes bossFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .bosskicker{color:var(--no);font-weight:900;letter-spacing:.16em;text-transform:uppercase;font-size:12px}
+  .bossintro h2{font-size:25px;margin:6px 0 8px}
+  .bossintro p{color:var(--muted);max-width:36ch;margin:0 auto 20px}
+  .bossstage{position:relative;background:radial-gradient(120% 90% at 50% 0%, rgba(255,107,122,.16), transparent 70%);border:1.5px solid var(--line);border-radius:20px;padding:16px 16px 15px;margin-bottom:16px;overflow:hidden}
+  .bosschar{font-size:72px;text-align:center;line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4))}
+  .bosschar.hit{animation:bossHit .4s}
+  .bosschar.miss{animation:bossTaunt .45s}
+  @keyframes bossHit{0%{transform:translateX(0) scale(1)}25%{transform:translateX(-8px) scale(1.06);filter:brightness(2.2)}50%{transform:translateX(8px)}100%{transform:translateX(0)}}
+  @keyframes bossTaunt{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.1) rotate(4deg)}}
+  .bosshpwrap{margin-top:12px}
+  .bosshprow{display:flex;justify-content:space-between;font-size:12.5px;font-weight:800;margin-bottom:5px}
+  .bosshprow #bossHpTxt{color:var(--muted)}
+  .bosshp{height:14px;border-radius:999px;background:#3a1f27;border:1px solid var(--line-hi);overflow:hidden}
+  .bosshp>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#FF8A5B,#FF4D6D);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+  .combo{position:absolute;top:14px;right:14px;background:var(--surface-hi);border:1.5px solid var(--line-hi);border-radius:999px;padding:6px 12px;font-weight:900;font-size:13px;transition:transform .12s}
+  .combo.hot{background:linear-gradient(180deg,#FFCF66,#F5AE2E);color:#2a1c00;border-color:transparent;box-shadow:0 0 14px rgba(245,174,46,.6);transform:scale(1.06)}
+  .floatdmg{position:absolute;top:54px;left:0;right:0;text-align:center;font-weight:900;font-size:30px;color:#FFC24B;opacity:0;pointer-events:none}
+  .floatdmg.go{animation:floatUp .8s ease-out}
+  .floatdmg.crit{color:#FF6B7A;font-size:38px}
+  .critword{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#FF6B7A;font-weight:900}
+  @keyframes floatUp{0%{opacity:0;transform:translateY(12px) scale(.8)}20%{opacity:1}100%{opacity:0;transform:translateY(-36px) scale(1.1)}}
+  .av.locked{opacity:.5;background:var(--surface)}
+  .av .avlock{font-size:17px;opacity:.85}
+  .av.shake{animation:hwshake .36s}
+  .avhint{color:var(--muted);font-size:12px;margin:8px 4px 0;opacity:.85}
+  .bossbanner{width:100%;text-align:left;background:linear-gradient(90deg,rgba(255,107,122,.18),rgba(255,107,122,.05));border:1.5px solid rgba(255,107,122,.4);border-radius:16px;padding:13px 15px;display:flex;align-items:center;gap:12px;margin-bottom:18px;transition:transform .08s}
+  .bossbanner:active{transform:scale(.99)}
+  .bossbanner .be{font-size:30px;flex:none}
+  .bossbanner .bt{font-weight:800;font-size:15px;display:block}
+  .bossbanner .bs{color:var(--muted);font-size:12.5px}
+  .bossbanner .go{margin-left:auto;font-size:22px;color:var(--no);flex:none}
+  .hearts{position:absolute;top:13px;left:14px;font-size:15px;letter-spacing:2px;line-height:1}
+  .hearts .lost{opacity:.4}
 </style>
 </head>
 <body>
@@ -310,6 +349,7 @@
     <div class="namebox">
       <label>Choose your character</label>
       <div class="avatars" id="avatarPick"></div>
+      <p class="avhint">🔒 Locked characters are boss trophies — beat a boss to unlock one.</p>
     </div>
     <button class="btn" id="startJourney">Start my quest →</button>
     <footer>Your progress saves on this device. No internet needed.<br><span class="vertag" id="verWelcome"></span></footer>
@@ -352,6 +392,7 @@
     </div>
 
     <div class="trailwrap" id="trail"></div>
+    <div id="bossBanner" style="display:none"></div>
 
     <div class="startbtns" id="startbtns">
       <button class="bigbtn" id="randomBtn">
@@ -441,6 +482,41 @@
     <div class="matchactions" id="matchActions"></div>
   </section>
 
+  <!-- BOSS BATTLE -->
+  <section id="boss" class="hidden">
+    <button class="backchip" id="bossBack">← Leave battle</button>
+    <div id="bossIntro" class="bossintro">
+      <div class="bossbig" id="bossBigEmoji">🐉</div>
+      <div class="bosskicker">Boss Battle</div>
+      <h2 id="bossName">Boss</h2>
+      <p id="bossBlurb"></p>
+      <button class="btn" id="bossStart">⚔️ Begin battle</button>
+      <button class="btn ghost" id="bossLeave">Maybe later</button>
+    </div>
+    <div id="bossBattle" class="hidden">
+      <div class="bossstage">
+        <div class="bosschar" id="bossChar">🐉</div>
+        <div class="floatdmg" id="floatDmg"></div>
+        <div class="combo" id="comboMeter">Combo ×1</div>
+        <div class="hearts" id="bossHearts"></div>
+        <div class="bosshpwrap"><div class="bosshprow"><span id="bossNameSm">Boss</span><span id="bossHpTxt">200/200</span></div><div class="bosshp"><i id="bossHpFill"></i></div></div>
+      </div>
+      <div class="qcard">
+        <div class="qnum" id="bossQNum">Attack 1</div>
+        <h2 id="bossQText">…</h2>
+        <div class="opts" id="bossOpts"></div>
+        <div class="nextwrap hidden" id="bossNextWrap"><button class="btn" id="bossNextBtn">Next attack →</button></div>
+      </div>
+    </div>
+    <div id="bossOutcome" class="bossintro hidden">
+      <div class="bossbig" id="bossOutEmoji">🐉</div>
+      <h2 id="bossOutTitle">The boss is still standing!</h2>
+      <p id="bossOutText"></p>
+      <button class="btn" id="bossRetry">Try again ⚔️</button>
+      <button class="btn ghost" id="bossOutLeave">Leave for now</button>
+    </div>
+  </section>
+
   <!-- CELEBRATION -->
   <div id="celebrate" class="cele hidden">
     <canvas id="confetti"></canvas>
@@ -463,6 +539,7 @@
       <div>
         <label>Your character</label>
         <div class="avatars" id="avatarPick2"></div>
+        <p class="avhint">🔒 Beat a boss (reach 10% milestones) to unlock more characters.</p>
       </div>
       <button class="btn" id="saveName">Save name</button>
       <button class="btn secondary" id="updateBtn">⟳ Update app to latest</button>
@@ -1687,6 +1764,10 @@ function loadState(){
   s.avatar = s.avatar||"🧙";
   s.progress = s.progress||{};   // {advId:{subjId:{best,attempts,mastered}}}
   s.homework = s.homework||{};
+  s.unlocked = Array.isArray(s.unlocked)?s.unlocked:[];
+  s.bossLevel = s.bossLevel||{};      // {advId:n} milestones that have spawned a boss
+  s.pendingBoss = s.pendingBoss||{};  // {advId:emoji} boss awaiting the player
+  if(s.avatar && s.unlocked.indexOf(s.avatar)<0) s.unlocked.push(s.avatar);
   if(s.subj){ s.progress.y7p1 = Object.assign({}, s.subj, s.progress.y7p1||{}); delete s.subj; }
   if(!("currentAdv" in s)) s.currentAdv = null;
   return s;
@@ -1698,7 +1779,7 @@ let state = loadState();
    HELPERS
    ============================================================ */
 const $=id=>document.getElementById(id);
-const screens=["welcome","adventures","home","quiz","results","homework","match"];
+const screens=["welcome","adventures","home","quiz","results","homework","match","boss"];
 function show(name){ screens.forEach(s=>$(s).classList.toggle("hidden", s!==name)); window.scrollTo(0,0); }
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function starStr(n){ let s=""; for(let i=0;i<3;i++) s+= i<n?"★":"☆"; return s; }
@@ -1778,6 +1859,7 @@ function renderHome(){
   $("settingsBtn").classList.toggle("hidden",reviseMode);
   $("homeToAdv").classList.toggle("hidden",reviseMode);
   updateStartBtn();
+  paintBossBanner();
 }
 
 function advPct(adv){
@@ -1840,13 +1922,23 @@ function buildGrid(){
 }
 
 const AVATARS=["🧙","🦸","🚀","🐯","🦊","🐉","🤖","🦉","🐺","🐼","🦕","🥷"];
+const BOSSES={"🦸":{name:"Captain Valor"},"🚀":{name:"Rocket Raider"},"🐯":{name:"Tiger Fang"},"🦊":{name:"Sly Vixen"},"🐉":{name:"Ember the Dragon"},"🤖":{name:"Mecha-Mind"},"🦉":{name:"Professor Owl"},"🐺":{name:"Nightwolf"},"🐼":{name:"Bao the Bear"},"🦕":{name:"Rex Titan"},"🥷":{name:"Shadow Ninja"}};
+if(state.unlocked.indexOf(AVATARS[0])<0){ state.unlocked.push(AVATARS[0]); saveState(); }
+function isUnlocked(a){ return a===AVATARS[0] || (state.unlocked||[]).indexOf(a)>=0; }
 let pendingAvatar=state.avatar||AVATARS[0];
 function paintAvatars(id, current, onPick){
   const box=$(id); if(!box) return; box.innerHTML="";
   AVATARS.forEach(a=>{
+    const ok=isUnlocked(a);
     const b=document.createElement("button");
-    b.className="av"+(a===current?" sel":""); b.type="button"; b.textContent=a;
-    b.addEventListener("click",()=>{ onPick(a); box.querySelectorAll(".av").forEach(x=>x.classList.toggle("sel",x.textContent===a)); });
+    b.className="av"+(a===current&&ok?" sel":"")+(ok?"":" locked"); b.type="button";
+    if(ok){ b.textContent=a; }
+    else { const bd=BOSSES[a]; b.innerHTML='<span class="avlock">🔒</span>'; b.setAttribute("aria-label",(bd?bd.name:"Locked")+" — locked"); }
+    if(ok){
+      b.addEventListener("click",()=>{ onPick(a); box.querySelectorAll(".av").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); });
+    } else {
+      b.addEventListener("click",()=>{ b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); });
+    }
     box.appendChild(b);
   });
 }
@@ -2018,8 +2110,24 @@ function finishQuiz(){
     mb.textContent = p.mastered ? "Unmark as mastered" : "Mark area as mastered ✓";
   } else { mb.classList.add("hidden"); }
 
-  if(celebrations.length) celebrateQueue(celebrations, ()=>show("results"));
-  else show("results");
+  const afterCele=()=>{
+    maybeSpawnBoss(adv);
+    if(state.pendingBoss && state.pendingBoss[adv.id]) launchBoss(state.pendingBoss[adv.id], adv.id, ()=>show("results"));
+    else show("results");
+  };
+  if(celebrations.length) celebrateQueue(celebrations, afterCele);
+  else afterCele();
+}
+function maybeSpawnBoss(adv){
+  if(state.pendingBoss && state.pendingBoss[adv.id]) return;   // one at a time
+  const milestones=Math.floor(advPct(adv)/10);
+  const lvl=(state.bossLevel&&state.bossLevel[adv.id])||0;
+  const nextLocked=AVATARS.find(a=>!isUnlocked(a));
+  if(milestones>lvl && nextLocked){
+    state.bossLevel=state.bossLevel||{}; state.bossLevel[adv.id]=lvl+1;
+    state.pendingBoss=state.pendingBoss||{}; state.pendingBoss[adv.id]=nextLocked;
+    saveState();
+  }
 }
 
 /* ---------- Celebrations + confetti ---------- */
@@ -2177,7 +2285,7 @@ if($("hwToAdv")) $("hwToAdv").addEventListener("click",()=>{ renderAdventures();
 if($("matchToHw")) $("matchToHw").addEventListener("click",()=>{ renderHwList(); show("homework"); });
 
 /* ---------- Version + one-tap update (keeps progress) ---------- */
-const APP_VERSION="1.4";
+const APP_VERSION="1.7";
 const APP_DATE="7 Sep 2026";
 function forceUpdate(){
   try{ $("modal").classList.add("hidden"); }catch(e){}
@@ -2191,6 +2299,106 @@ function paintVersion(){
 }
 if($("updateBtn")) $("updateBtn").addEventListener("click",forceUpdate);
 paintVersion();
+
+/* ============================================================
+   BOSS BATTLES — combo criticals; win to unlock the avatar
+   ============================================================ */
+let bossS=null;
+function bossData(e){ return BOSSES[e]||{name:"The Challenger"}; }
+function comboMult(c){ return c<=0?1:Math.min(1+0.5*(c-1),3); }
+function bossBuildQs(advId){
+  let pool=[]; advSubjects(advById(advId)).forEach(s=>s.q.forEach(item=>pool.push({item,subj:s})));
+  return buildQuestions(pool).slice(0,20);
+}
+function launchBoss(emoji, advId, done){
+  if(!advById(advId)){ if(done)done(); return; }
+  bossS={emoji, advId, done, hpMax:200, hp:200, heartsMax:5, hearts:5, combo:0, i:0, answered:false, questions:bossBuildQs(advId)};
+  const b=bossData(emoji);
+  $("bossBigEmoji").textContent=emoji; $("bossName").textContent=b.name;
+  $("bossBlurb").textContent="Get answers right in a row to land CRITICAL HITS and defeat "+b.name+". But watch out — 5 wrong answers and you’re beaten! Win to unlock "+emoji+" as a playable character.";
+  $("bossIntro").classList.remove("hidden"); $("bossBattle").classList.add("hidden"); $("bossOutcome").classList.add("hidden");
+  show("boss");
+}
+function bossBegin(){
+  if(!bossS)return;
+  bossS.hp=bossS.hpMax; bossS.hearts=bossS.heartsMax; bossS.combo=0; bossS.i=0; bossS.answered=false; bossS.questions=bossBuildQs(bossS.advId);
+  $("bossChar").textContent=bossS.emoji; $("bossNameSm").textContent=bossData(bossS.emoji).name;
+  $("bossIntro").classList.add("hidden"); $("bossOutcome").classList.add("hidden"); $("bossBattle").classList.remove("hidden");
+  bossHp(); bossCombo(); bossHearts(); bossQ();
+}
+function bossHp(){ const pc=Math.max(0,Math.round(bossS.hp/bossS.hpMax*100)); $("bossHpFill").style.width=pc+"%"; $("bossHpTxt").textContent=Math.max(0,bossS.hp)+"/"+bossS.hpMax; }
+function bossHearts(){ const el=$("bossHearts"); if(!el)return; let h=""; for(let i=0;i<bossS.heartsMax;i++){ h+= i<bossS.hearts ? "❤️" : '<span class="lost">🤍</span>'; } el.innerHTML=h; }
+function bossCombo(){ const m=comboMult(bossS.combo); const t=(m%1===0)?String(m):m.toFixed(1); $("comboMeter").textContent="Combo \u00D7"+t; $("comboMeter").classList.toggle("hot",bossS.combo>=2); }
+function bossQ(){
+  const q=bossS.questions[bossS.i]; bossS.answered=false;
+  $("bossQNum").textContent=(q.emoji||"\u2753")+" "+q.subj+" \u00B7 Attack "+(bossS.i+1);
+  $("bossQText").textContent=q.q;
+  const wrap=$("bossOpts"); wrap.innerHTML=""; const L=["A","B","C","D"];
+  q.opts.forEach((o,idx)=>{ const bt=document.createElement("button"); bt.className="opt"; bt.innerHTML='<span class="key">'+L[idx]+'</span><span>'+o.t+'</span>'; bt.addEventListener("click",()=>bossAnswer(idx,bt)); wrap.appendChild(bt); });
+  $("bossNextWrap").classList.add("hidden");
+}
+function bossFloat(dmg,mult){
+  const el=$("floatDmg"); el.className="floatdmg";
+  if(dmg<=0){ el.innerHTML='<span class="critword">Missed!</span>'; }
+  else { const crit=mult>=1.5; if(crit)el.classList.add("crit"); const word=mult>=3?"Devastating!":mult>=2.5?"Massive hit!":"Critical hit!"; el.innerHTML="-"+dmg+(crit?'<span class="critword">'+word+'</span>':''); }
+  void el.offsetWidth; el.classList.add("go");
+}
+function bossAnswer(idx,btn){
+  if(!bossS||bossS.answered)return; bossS.answered=true;
+  const q=bossS.questions[bossS.i]; const buttons=[...$("bossOpts").children];
+  buttons.forEach((b,j)=>{ b.disabled=true; if(q.opts[j].correct)b.classList.add("correct"); else b.classList.add("dim"); });
+  const right=q.opts[idx].correct; const char=$("bossChar");
+  if(right){
+    btn.classList.remove("dim"); bossS.combo++;
+    const mult=comboMult(bossS.combo); const dmg=Math.round(12*mult);
+    bossS.hp-=dmg; if(bossS.combo>(state.bestStreak||0)) state.bestStreak=bossS.combo;
+    bossFloat(dmg,mult); char.classList.remove("hit"); void char.offsetWidth; char.classList.add("hit");
+  } else {
+    btn.classList.remove("dim"); btn.classList.add("wrong"); bossS.combo=0; bossS.hearts--;
+    bossFloat(0,0); char.classList.remove("miss"); void char.offsetWidth; char.classList.add("miss");
+  }
+  bossHp(); bossCombo(); bossHearts(); saveState();
+  if(bossS.hp<=0){ setTimeout(bossWin,700); return; }
+  if(bossS.hearts<=0){ setTimeout(function(){ bossLose("ko"); },700); return; }
+  $("bossNextBtn").textContent = (bossS.i+1>=bossS.questions.length)?"Finish":"Next attack \u2192";
+  $("bossNextWrap").classList.remove("hidden");
+}
+function bossNext(){
+  if(!bossS||bossS.hp<=0)return;
+  if(bossS.i+1>=bossS.questions.length){ bossLose("out"); return; }
+  bossS.i++; bossQ(); window.scrollTo(0,0);
+}
+function bossWin(){
+  const e=bossS.emoji, advId=bossS.advId, done=bossS.done;
+  if(state.unlocked.indexOf(e)<0) state.unlocked.push(e);
+  if(state.pendingBoss) delete state.pendingBoss[advId];
+  addXpQuiet(60); saveState();
+  const nm=bossData(e).name; bossS=null;
+  celebrateQueue([{emoji:e, title:"Boss defeated!", sub:"You beat "+nm+"! "+e+" is unlocked \u2014 choose it as your character in Settings."}], ()=>{ if(done)done(); });
+}
+function bossLose(reason){
+  $("bossBattle").classList.add("hidden"); $("bossIntro").classList.add("hidden");
+  $("bossOutEmoji").textContent=bossS.emoji;
+  const nm=bossData(bossS.emoji).name;
+  if(reason==="ko"){ $("bossOutTitle").textContent="You were defeated!"; $("bossOutText").textContent="That’s 5 wrong answers — "+nm+" wore you down. Read the tricky ones again, then rematch "+nm+"!"; }
+  else { $("bossOutTitle").textContent="The boss is still standing!"; $("bossOutText").textContent=nm+" still has "+Math.max(0,bossS.hp)+" HP left. Chain more correct answers in a row for bigger critical hits and finish the job!"; }
+  $("bossOutcome").classList.remove("hidden");
+}
+function bossLeave(){ const d=bossS&&bossS.done; bossS=null; if(d)d(); else { renderHome(); show("home"); } }
+function paintBossBanner(){
+  const el=$("bossBanner"); if(!el)return;
+  const e=state.pendingBoss&&curAdv&&state.pendingBoss[curAdv.id];
+  if(!e){ el.style.display="none"; el.innerHTML=""; el.onclick=null; return; }
+  el.style.display=""; el.className="bossbanner";
+  el.innerHTML='<span class="be">'+e+'</span><span><span class="bt">A boss is waiting!</span><span class="bs">Defeat '+bossData(e).name+' to unlock '+e+'</span></span><span class="go">\u2694\uFE0F</span>';
+  el.onclick=()=>launchBoss(e, curAdv.id, ()=>{ renderHome(); show("home"); });
+}
+if($("bossStart")) $("bossStart").addEventListener("click",bossBegin);
+if($("bossNextBtn")) $("bossNextBtn").addEventListener("click",bossNext);
+if($("bossRetry")) $("bossRetry").addEventListener("click",bossBegin);
+if($("bossLeave")) $("bossLeave").addEventListener("click",bossLeave);
+if($("bossOutLeave")) $("bossOutLeave").addEventListener("click",bossLeave);
+if($("bossBack")) $("bossBack").addEventListener("click",bossLeave);
 
 /* ============================================================
    WELCOME / SETTINGS / BOOT
